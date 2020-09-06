@@ -1,0 +1,6 @@
+# win condition configuration file for rock_paper_scissor.rb
+1: ["lizard", "scissors"] # rock
+4: ["spock", "paper"] # lizard
+5: ["scissors", "rock"] # spock
+3: ["paper", "lizard"] # scissors
+2: ["rock", "spock"] # paper

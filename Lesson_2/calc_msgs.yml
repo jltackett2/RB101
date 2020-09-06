@@ -1,0 +1,18 @@
+welcome: "Welcome to the calculator!"
+name_entry: "Please enter your name:"
+valid_name: "Sorry, please make sure you enter a valid name."
+invalid_num_msg: "Sorry, you entered an invalid number. Please enter:\n
+                  Integer  (ex. 1)\n
+                  Float    (ex. 1.33)\n
+                  Fraction (ex. 1/2)"
+
+operator_selection: "What operation would you like to perform:\n
+                     Add\n
+                     Subtract\n
+                     Multply\n
+                     Divide"
+
+
+invalid_operator: "Sorry, please type add, subtract, multiply, or divide."
+go_again?: "Do you want to perform another calculation?"
+goodbye: "Thank you for using the calculator, goodbye!"
