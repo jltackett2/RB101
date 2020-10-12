@@ -18,7 +18,7 @@ end
 
 def start_round
   puts ""
-  prompt("Hit enter to start round...")
+  prompt("Hit enter to continue...")
   gets
   system("clear") || system("cls")
 end
@@ -29,6 +29,17 @@ def show_selections(user_name, user_selection_key,
   prompt("#{user_name} selected: #{user_selection_key[user_selection]}")
   prompt("Computer selected: #{computer_selection}")
   puts ""
+end
+
+def user_wins_round?(user_selection, computer_selection, user_selection_key)
+
+  if WIN_CONDITION[user_selection.to_i].include?(computer_selection)
+    return true
+  elsif user_selection_key[user_selection] == computer_selection
+    return nil
+  else
+    return false
+  end
 end
 
 def number_of_games_prompt
@@ -60,24 +71,75 @@ def user_selection_prompt
   prompt("Type '5' for Spock")
 end
 
+def get_user_choice
+  loop do # user_selection and validation loop
+    user_selection_prompt
+    user_choice = gets.chomp.strip
+
+    if USER_VALID_CHOICES.include?(user_choice)
+      return user_choice
+    else
+      prompt("Sorry, invalid input.")
+    end
+  end
+end
+
 def rock_paper_scissors_shoot_display
   prompt("ROCK, PAPER, SCISSORS, LIZARD, SPOCK SHOOT!")
   puts ""
 end
 
+def game_winner?(comp_wins, user_wins, win_number)
+  comp_wins == win_number || user_wins == win_number
+end
+
+def start_new_game_display
+  system("clear") || system("cls")
+  prompt("Excellent, starting new game!")
+  puts "----------------------------------------------"
+  puts ""
+end
+
+def valid_exit_input?(exit)
+  exit == "exit" || exit == ""
+end
+
+def exit?
+  loop do
+    puts ""
+    prompt("Please hit enter to start a new game, or type 'exit' to quit.")
+    exit = nil
+    exit = gets.chomp.downcase.strip
+
+    if valid_exit_input?(exit)
+      if exit == "exit"
+        return true
+      else
+        return false
+      end
+    else
+      prompt "Sorry, invalid input."
+    end
+  end
+end
+
+def user_wins_game?(user_wins, win_number, user_name)
+  if user_wins == win_number
+    prompt("Congrats! #{user_name} was first to #{win_number}!")
+  else
+    prompt("Sorry, computer was first to #{win_number}")
+  end
+end
 # ----------------------------------------------------------
 # game welcome
+system("clear") || system("cls")
+
 prompt("Welcome to Rock, Paper, Scissors...now with Lizard and Spock!")
 user_name = ""
 
-loop do # username entry and validation loop
+while user_name.strip.empty? do
   prompt("Please enter your name:")
   user_name = gets.chomp
-  if user_name.empty?
-    puts "Sorry, you must enter a user name."
-  else
-    break
-  end
 end
 
 prompt("Thank you, #{user_name}.")
@@ -87,9 +149,9 @@ loop do # go_again loop
 
   loop do # win number selection loop
     number_of_games_prompt
-    win_number = gets.chomp
+    win_number = gets.chomp.strip.to_i
 
-    if %w(1 2 3 4 5 6 7 8 9 10).include?(win_number) # win_number validation
+    if [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].include?(win_number) # win_number validation
       prompt("Ok, first to #{win_number} wins!")
       break
     else
@@ -103,62 +165,39 @@ loop do # go_again loop
   comp_wins = 0
 
   # limits number of rounds to win number
-  until (comp_wins == win_number.to_i) || (user_wins == win_number.to_i)
-    user_selection = ""
+  until (comp_wins == win_number) || (user_wins == win_number)
+
     scoreboard(user_name, user_wins, comp_wins, win_number)
+
     rock_paper_scissors_shoot_display
 
-    loop do # user_selection and validation loop
-      user_selection_prompt
-      user_selection = gets.chomp
-
-      if USER_VALID_CHOICES.include?(user_selection)
-        break
-      else
-        prompt("Sorry, invalid input.")
-      end
-    end
+    user_selection = get_user_choice
 
     computer_selection = COMP_VALID_CHOICES.sample
 
     show_selections(user_name, user_selection_key,
                     user_selection, computer_selection)
 
-    # round winner results logic
-    if WIN_CONDITION[user_selection.to_i].include?(computer_selection)
+    if user_wins_round?(user_selection, computer_selection, user_selection_key)
       prompt("#{user_name} wins the round!")
       user_wins += 1
-    elsif user_selection_key[user_selection] == computer_selection
-      prompt("Tie! Starting round over....")
-    else
+    elsif user_wins_round?(user_selection, computer_selection, user_selection_key) == false
       prompt("Computer wins the round!")
       comp_wins += 1
+    else
+      prompt("Tie! Starting round over....")
     end
 
     scoreboard(user_name, user_wins, comp_wins, win_number)
-
-    unless comp_wins == win_number.to_i || user_wins == win_number.to_i
-      start_round
-    end
+    start_round
   end
 
-  # indicates overall game winner
-  if user_wins == win_number.to_i
-    prompt("Congrats! #{user_name} was first to #{win_number}!")
-  else
-    prompt("Sorry, computer was first to #{win_number}")
-  end
+  user_wins_game?(user_wins, win_number, user_name)
 
-  puts ""
-  prompt("Would you like to play again (y/n)?")
-  play_again = gets.chomp
-
-  if play_again == "y"
-    prompt("Excellent, starting over!")
-    puts "----------------------------------------------"
-    puts ""
-  else
+  if exit?
     break
+  else
+    start_new_game_display
   end
 end
 
